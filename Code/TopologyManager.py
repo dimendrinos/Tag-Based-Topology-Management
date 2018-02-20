@@ -14,10 +14,11 @@ class TopologyManager:
     This is a Topology Manager for Software Defined Networks.
     From this Python Program we can extract from a JSON Configuration file
     the topology of a Software Defined Network, collect information and manage
-    the network.
+    the network. The basic functionality of this component is to calculate and
+    return path(s) from a source to a destination(s) based on a tag.
     """
 
-    #Dictionaries with information from JSON
+    #Dictionaries with information from JSON file
 
     ips = {}
     macs = {}
@@ -29,45 +30,8 @@ class TopologyManager:
 
     #Initialize the Class
     def __init__(self):
+        #At the begging call loadConfig method
         self.loadConfig(self.Graph)
-        self.socketListen(self.Graph)
-
-    def socketListen(self,Graph):
-        sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-        manager_address = ('127.0.0.1',9999)
-        print(sys.stderr,'starting up on %s port %s' %manager_address)
-        sock.bind(manager_address)
-        sock.listen(1)
-        path = []
-        fids = []
-        while True:
-            print(sys.stderr, 'waiting for connection')
-            connection, client_address = sock.accept()
-            try:
-                print(sys.stderr,'connection from', client_address)
-                while True:
-                    data =connection.recv(4096)
-                    print(sys.stderr, 'recieved %s' %data)
-                    if data:
-                        print(str(data[2:4]))
-                        destinations = self.get_dest_by_eq_attribute(Graph,'color',data.decode())
-
-                        for d in destinations:
-                            path.append(self.get_shortest_path(Graph,'h1',d))
-
-                        for p in path:
-                            fids.append(str(self.get_FID(p)))
-                        tosend = pickle.dumps(fids)
-                        connection.send(tosend)
-                        destinations.clear()
-                        path.clear()
-                        fids.clear()
-                        connection.close()
-                    else:
-                         break
-            finally:
-                connection.close()
-
 
 
     # In this method we read the Topology from Json file and
@@ -86,13 +50,13 @@ class TopologyManager:
             Graph.add_edge(v[0],v[1],name = k)
             self.links[k] = v
 
-
+    #We can add tag to a Node
     def add_tag(self,G,fnode,attr,value):
         for node in G.nodes():
             if node == fnode:
                attrs = {node: {attr: value}}
                nx.set_node_attributes(G,attrs)
-
+    #We can remove a tag from a Node
     def remove_tag(self,G,fnode,attr):
         G.node[fnode].pop(attr,None)
 
@@ -112,7 +76,7 @@ class TopologyManager:
         return path
 
     # Given an attribute and a value we return all nodes
-    # where satisfy that rule.
+    # where satisfy that rule. E.g return wich nodes have 'color = red' or bandwidth >10
     def get_dest_by_eq_attribute(self,G,attr,value):
         dest = []
         for node in G:
@@ -145,6 +109,7 @@ class TopologyManager:
         for i in path:
             bf = bin(int(bf,2) | int(i,2))
         return bf[2:]
+    #In this method we can plot the Graph if we want to.
     def printGraph(self,Graph):
         color_map = []
         for node in Graph:

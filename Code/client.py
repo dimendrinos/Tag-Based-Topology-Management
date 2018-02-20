@@ -32,7 +32,7 @@ ipv6_packet.srcip = IPAddr6("::0")
 ipv6_packet.dstip = IPAddr6("::7")
 ipv6_packet.next_header_type = 0xFD
 
-# Set a tag in IP payload. e.g color = red
+# Set a tag in IP payload. e.g color = red. Tag-Based Forwarding
 ipv6_packet.payload = "[color='red']"
 ether = ethernet()
 ether.type = 0x86DD
