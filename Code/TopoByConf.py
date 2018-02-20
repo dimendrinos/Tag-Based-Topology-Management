@@ -4,7 +4,7 @@ from mininet.node import Controller, RemoteController, OVSController
 from mininet.log import setLogLevel, info
 import json
 class TopoByConf( Topo ):
-    "Simple topology example."
+    "Creating the topology according to Configuration file "
 
     def __init__( self ):
         "Create custom topo from Configuration.json File ."
