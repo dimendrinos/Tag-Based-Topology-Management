@@ -109,7 +109,7 @@ class Tags (object):
 
         '''
         
-        The same Rules also for Switch 2 check the above comments
+        The same Rules also for Switch 2 check the above comments..
         
         '''
 
