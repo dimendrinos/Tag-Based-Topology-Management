@@ -10,13 +10,14 @@ class TopoByConf( Topo ):
         "Create custom topo from Configuration.json File ."
 
         # Initialize topology
+        "Read the configuration file and load it to data"
         with open('/home/user/Desktop/pox/pox/misc/Configuration.json') as data_file:
             data = json.load(data_file)
 
         Topo.__init__( self )
 
 
-        # Add hosts and switches
+        "Add hosts and switches parsing the dictionaries of JSON file and add all the attributes to mininet"
         info('*** Adding Hosts\n')
         for h in data['hosts']:
             h = self.addHost(str(h), ip = data['hosts'][h]['ip'], mac = data['hosts'][h]['mac'])
